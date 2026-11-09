@@ -1,0 +1,11 @@
+item,T1,T2,T3,T4,V1,V2,V3,U1,U2,A1,A2,notes
+item-01,pass,pass,pass,pass,pass,pass,pass,fail,pass,pass,fail,"U1: doesn't say the 3 ounce bar in the first two sentences | A2: shows 365 brand"
+item-02,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,"U1: Not a fail but I think it should focus on the 15 tea bags vs the 1.32 ounce box"
+item-03,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,"V2: Not a fail. Has more than one but that seems fine to me"
+item-04,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,"V2: Not a fail. Has more than one but that seems fine to me"
+item-05,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,"V2: Not a fail. Has more than one but that seems fine to me"
+item-06,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,"U2: Interesting that the hook class is different from the free class that comes with the purchase of equipment, I like that."
+item-07,pass,pass,pass,pass,pass,fail,pass,pass,pass,pass,pass,"V2: Does saying using it with coffee or tea count as a pairing? Feel technically it does but also feels like a low bar | U2: interesting that the pour over class has a day and time but none of the others do. We probably need consistency here."
+item-08,pass,pass,pass,pass,pass,pass,pass,fail,pass,pass,pass,"U1: Does not say the how much"
+item-09,pass,pass,pass,pass,pass,pass,pass,fail,pass,pass,pass,"U1: the how much came in the third sentence"
+item-10,pass,pass,pass,pass,pass,pass,pass,fail,pass,pass,fail,"U1: the how is in the third sentence | U2: As noted in an another one, if we mention class, do we need day and time for each class or do we leave blank? We just need a consistent structure | A2: Allegro brand mentioned"
