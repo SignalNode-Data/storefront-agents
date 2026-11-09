@@ -15,3 +15,5 @@ runs/*
 !runs/baseline-v1/outputs.jsonl
 !runs/pipeline-v1
 !runs/pipeline-v1/outputs.jsonl
+!runs/pipeline-v2
+!runs/pipeline-v2/outputs.jsonl

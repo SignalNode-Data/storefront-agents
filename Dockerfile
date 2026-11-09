@@ -8,6 +8,7 @@ COPY skills ./skills
 COPY data ./data
 COPY runs/baseline-v1/outputs.jsonl ./runs/baseline-v1/outputs.jsonl
 COPY runs/pipeline-v1/outputs.jsonl ./runs/pipeline-v1/outputs.jsonl
+COPY runs/pipeline-v2/outputs.jsonl ./runs/pipeline-v2/outputs.jsonl
 COPY evals/rubric.md ./evals/rubric.md
 COPY app ./app
 # One worker: the per-visitor limits live in memory (Cloud Run max instances = 1).

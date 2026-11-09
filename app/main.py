@@ -22,7 +22,9 @@ from storefront_agents.pipeline import run_product
 
 PER_VISITOR_PER_DAY = int(os.environ.get("PER_VISITOR_PER_DAY", "5"))
 GLOBAL_PER_DAY = int(os.environ.get("GLOBAL_PER_DAY", "60"))
-RECORDED_RUN = os.environ.get("RECORDED_RUN", "runs/pipeline-v1/outputs.jsonl")
+RECORDED_RUN = os.environ.get("RECORDED_RUN", "runs/pipeline-v2/outputs.jsonl")
+RESEARCH_DIR = pathlib.Path(os.environ.get("RESEARCH_DIR", "data/research-v2"))  # tagged notes (Block 5)
+agents.RESEARCH_CACHE = RESEARCH_DIR
 BASELINE_RUN = os.environ.get("BASELINE_RUN", "runs/baseline-v1/outputs.jsonl")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)  # no public API docs
@@ -97,7 +99,8 @@ def image(pid: str):
 def recorded(pid: str):
     if pid not in CATALOG:
         raise HTTPException(404)
-    research = json.loads((pathlib.Path("data/research") / f"{pid}.json").read_text()) if (pathlib.Path("data/research") / f"{pid}.json").exists() else {}
+    f = RESEARCH_DIR / f"{pid}.json"
+    research = json.loads(f.read_text()) if f.exists() else {}
     return {"after": RECORDED.get(pid), "before": BASELINE.get(pid), "product": CATALOG[pid],
             "search_entry_point": research.get("search_entry_point")}
 
@@ -106,14 +109,17 @@ def recorded(pid: str):
 def run(pid: str, request: Request):
     if pid not in CATALOG:
         raise HTTPException(404)
-    cache = pathlib.Path("data/research") / f"{pid}.json"
+    cache = RESEARCH_DIR / f"{pid}.json"
     if not cache.exists():  # never trigger live Search grounding from the demo
         raise HTTPException(409, "No cached research for this product.")
     msg = _take_quota(_visitor(request))
     if msg:
         raise HTTPException(429, msg)
     t0 = time.time()
-    result = run_product(CATALOG[pid], RAW[pid])
+    try:
+        result = run_product(CATALOG[pid], RAW[pid])
+    except Exception:  # model unavailable or rate-limited: say so, keep the recorded run
+        raise HTTPException(503, "The live model is not available right now. The recorded run still works.")
     result["seconds"] = round(time.time() - t0, 1)
     result["search_entry_point"] = json.loads(cache.read_text()).get("search_entry_point")
     return result
