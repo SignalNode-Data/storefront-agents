@@ -1,6 +1,6 @@
 # Error analysis: pipeline-v1 (the "after", first version)
 
-Run: `runs/pipeline-v1/` · model `gemini-3.8-flash` · skills brand-voice 1.1, output-format 1.0, policy-rules 1.0, store-facts 1.0 · 32 products · 2026-11-09 01:22-02:00 PT.
+Run: `runs/pipeline-v1/` · model `gemini-3.8-flash` · skills brand-voice 1.1, output-format 1.0, policy-rules 1.0, store-facts 1.0 · 32 products · 2026-11-09 01:22-01:45 PT (3 re-runs after).
 Result: **30 publish, 2 held for photo mismatch, 0 needs review.** 5 products needed one revision. 3 products hit a 429 rate limit and were re-run one at a time (same code).
 Tokens: 318,538 input · 36,247 output · 213,531 thinking · 80 grounded search queries · 140 model calls.
 
