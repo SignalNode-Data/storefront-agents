@@ -22,6 +22,7 @@ from storefront_agents.pipeline import run_product
 
 PER_VISITOR_PER_DAY = int(os.environ.get("PER_VISITOR_PER_DAY", "5"))
 GLOBAL_PER_DAY = int(os.environ.get("GLOBAL_PER_DAY", "60"))
+LIVE_RUNS = os.environ.get("LIVE_RUNS", "on") == "on"  # "off": recorded runs only
 RECORDED_RUN = os.environ.get("RECORDED_RUN", "runs/pipeline-v2/outputs.jsonl")
 RESEARCH_DIR = pathlib.Path(os.environ.get("RESEARCH_DIR", "data/research-v2"))  # tagged notes (Block 5)
 agents.RESEARCH_CACHE = RESEARCH_DIR
@@ -83,6 +84,11 @@ def robots():
     return FileResponse("app/static/robots.txt", media_type="text/plain")
 
 
+@app.get("/api/config")
+def config():
+    return {"live": LIVE_RUNS}
+
+
 @app.get("/api/products")
 def products():
     return [{"id": p["id"], "name": p["name"], "group": p["group"]} for p in CATALOG.values()]
@@ -109,6 +115,8 @@ def recorded(pid: str):
 def run(pid: str, request: Request):
     if pid not in CATALOG:
         raise HTTPException(404)
+    if not LIVE_RUNS:
+        raise HTTPException(503, "Live runs are paused. The recorded run still works.")
     cache = RESEARCH_DIR / f"{pid}.json"
     if not cache.exists():  # never trigger live Search grounding from the demo
         raise HTTPException(409, "No cached research for this product.")

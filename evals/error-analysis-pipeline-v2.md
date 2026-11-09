@@ -54,3 +54,7 @@ Result: 1 of 5 confirmed from page text, 2 matched by page identity, 1 tag not s
 - The change did what it was meant to do: general facts are now worded as general (N1 62 → 4) with no loss on the judged rubric.
 - It created a new, narrower risk: **a wrong `[THIS PRODUCT]` tag**. The model sets the tag, and Colombia shows it can tag a fact from a page about another product.
 - Next change (not built): a code check that a `[THIS PRODUCT]` note cites at least one page whose title or address names the product (or its ID); otherwise downgrade the note to `[GENERAL]`. The per-note source indexes saved in `data/research-v2/*.json` (`note_sources`) make this possible.
+
+## Colombia fix: decided, not run (2026-11-09)
+
+The candidate chose to remove the unsupported cooperative note and re-run Colombia (12:46 PT). The re-run failed: Google Cloud restricted Gemini access on the project (notice received about 12:06 PT; every call returns 403). The cache edit was reverted so the repo matches the recorded runs. **The published pipeline-v2 Colombia description still states the cooperative as fact.** It stays here as a documented example of a wrong `[THIS PRODUCT]` tag.

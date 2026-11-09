@@ -114,6 +114,9 @@ $("#live").onclick = async () => {
     else { const rec = await (await fetch("/api/recorded/" + $("#pick").value)).json(); current = { after: body, before: rec.before, search_entry_point: body.search_entry_point, seconds: body.seconds }; view = "after"; render(); }
   } finally { b.disabled = false; b.textContent = "Run the agents live (~1 min)"; }
 };
+fetch("/api/config").then(r => r.json()).then(c => {
+  if (!c.live) { $("#live").hidden = true; $("#note").textContent = "Live runs are paused. These are recorded runs of the agents from November 9, 2026."; }
+}).catch(() => {});
 init();
 </script>
 </body>
