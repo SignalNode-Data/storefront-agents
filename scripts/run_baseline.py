@@ -3,8 +3,10 @@
 Same inputs as the final pipeline (product data, photo, store facts), but no
 agents, no skill library, no Search grounding, no Validator.
 
-Usage (from repo root):  .venv/bin/python scripts/run_baseline.py
+Usage (from repo root):  .venv/bin/python scripts/run_baseline.py [--reason TEXT] [ITEM_ID ...]
 Writes: runs/baseline-v1/outputs.jsonl and runs/baseline-v1/run.json
+With ITEM_IDs: re-runs only those products, replaces their rows, and logs the
+re-run in run.json under "reruns" (the first run's summary stays as it was).
 """
 import json
 import pathlib
@@ -70,19 +72,50 @@ def run_one(client, template, facts, p):
     }
 
 
+def write_rows(path, rows):
+    with open(path, "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     client = genai.Client(vertexai=True, project=PROJECT, location=LOCATION)
     template = pathlib.Path(PROMPT_FILE).read_text()
     facts = store_facts_text()
-    catalog = load_catalog()
+    args = sys.argv[1:]
+    reason = None
+    if "--reason" in args:
+        i = args.index("--reason")
+        reason = args[i + 1]
+        del args[i:i + 2]
+    only = set(args)
+    catalog = [p for p in load_catalog() if not only or p["id"] in only]
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
     with ThreadPoolExecutor(max_workers=4) as pool:
         results = list(pool.map(lambda p: run_one(client, template, facts, p), catalog))
-    with open(OUT_DIR / "outputs.jsonl", "w", encoding="utf-8") as f:
-        for r in results:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    out_file, run_file = OUT_DIR / "outputs.jsonl", OUT_DIR / "run.json"
     ok = [r for r in results if "error" not in r]
+    if only and out_file.exists():  # re-run of a few products: merge, keep the rest
+        new = {r["id"]: r for r in results}
+        rows = [json.loads(line) for line in open(out_file, encoding="utf-8")]
+        merged = [new.pop(r["id"], r) for r in rows] + list(new.values())
+        write_rows(out_file, merged)
+        summary = json.loads(run_file.read_text())
+        summary["errors"] = sum(1 for r in merged if "error" in r)
+        summary.setdefault("reruns", []).append({
+            "ids": sorted(only),
+            "started_utc": started,
+            "reason": reason,
+            "errors": len(results) - len(ok),
+            "input_tokens": sum(r["usage"]["input_tokens"] or 0 for r in ok),
+            "output_tokens": sum(r["usage"]["output_tokens"] or 0 for r in ok),
+            "thinking_tokens": sum(r["usage"]["thinking_tokens"] or 0 for r in ok),
+        })
+        run_file.write_text(json.dumps(summary, indent=2) + "\n")
+        print(json.dumps(summary["reruns"][-1], indent=2))
+        return
+    write_rows(out_file, results)
     summary = {
         "run": "baseline-v1",
         "model": MODEL,
@@ -94,7 +127,7 @@ def main():
         "output_tokens": sum(r["usage"]["output_tokens"] or 0 for r in ok),
         "thinking_tokens": sum(r["usage"]["thinking_tokens"] or 0 for r in ok),
     }
-    (OUT_DIR / "run.json").write_text(json.dumps(summary, indent=2) + "\n")
+    run_file.write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 
 

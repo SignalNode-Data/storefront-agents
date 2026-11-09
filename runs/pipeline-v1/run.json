@@ -7,7 +7,7 @@
     "publish": 30,
     "hold_photo_mismatch": 2
   },
-  "revised": 5,
+  "revised": 4,
   "max_revisions": 1,
   "skills": {
     "brand-voice": "1.1",
@@ -56,5 +56,46 @@
     "output": 36247,
     "thinking": 213531,
     "search_queries": 80
-  }
+  },
+  "reruns": [
+    {
+      "ids": [
+        "B074MH4QLB"
+      ],
+      "started_utc": "2026-11-09T17:03:28+00:00",
+      "reason": "rubric v1.1 data fix: honey display name gained 16 oz",
+      "status": {
+        "B074MH4QLB": "publish"
+      },
+      "skills": {
+        "brand-voice": "1.1",
+        "output-format": "1.0",
+        "policy-rules": "1.0",
+        "store-facts": "1.0"
+      },
+      "usage_by_agent": {
+        "vision": {
+          "calls": 1,
+          "input": 2112,
+          "output": 128,
+          "thinking": 0,
+          "search_queries": 0
+        },
+        "draft": {
+          "calls": 1,
+          "input": 2284,
+          "output": 649,
+          "thinking": 2640,
+          "search_queries": 0
+        },
+        "validator": {
+          "calls": 1,
+          "input": 3788,
+          "output": 9,
+          "thinking": 968,
+          "search_queries": 0
+        }
+      }
+    }
+  ]
 }

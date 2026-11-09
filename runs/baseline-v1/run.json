@@ -7,5 +7,18 @@
   "errors": 0,
   "input_tokens": 61201,
   "output_tokens": 8937,
-  "thinking_tokens": 57714
+  "thinking_tokens": 57714,
+  "reruns": [
+    {
+      "ids": [
+        "B074MH4QLB"
+      ],
+      "started_utc": "2026-11-09T17:03:10+00:00",
+      "reason": "rubric v1.1 data fix: honey display name gained 16 oz",
+      "errors": 0,
+      "input_tokens": 1891,
+      "output_tokens": 253,
+      "thinking_tokens": 1627
+    }
+  ]
 }

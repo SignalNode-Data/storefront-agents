@@ -54,3 +54,7 @@ Observations (not failures under v1.0):
 
 - **Honey display name has no size** (our error in `data/selection.csv`): add "16 oz" from the source name. Recommendation: fix it and re-run the baseline (≈ 4 minutes, a few cents) so the scored "before" uses the same data as the "after".
 - **Bel Canto photo mismatch:** keep it as a deliberate test case for G6 (recommended), or swap the product.
+
+## Decisions (2026-11-09 09:02 PT, candidate)
+
+The candidate accepted all five recommendations and both data fixes. They are recorded in `evals/rubric.md` v1.1. Honey re-ran in both runs with "16 oz" in its name (logged in each `run.json` under `reruns`). In pipeline-v1, honey published with no revision this time, so "revised" changed from 5 to 4.
