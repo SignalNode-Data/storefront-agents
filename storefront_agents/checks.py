@@ -36,6 +36,8 @@ def run(out, product):
     for name, text in p.items():
         for m in BRAND_PATTERN.finditer(text):
             issues.append({"rule": "P2 brand", "piece": name, "detail": f"brand name '{m.group(0)}'"})
+        if "[THIS PRODUCT]" in text.upper() or "[GENERAL]" in text.upper():
+            issues.append({"rule": "format", "piece": name, "detail": "research tag copied into the content"})
         for m in HYPE.finditer(text):
             issues.append({"rule": "V1 hype", "piece": name, "detail": f"hype word '{m.group(0)}'"})
     if sum(t.count("!") for t in p.values()) > 1:

@@ -1,6 +1,6 @@
 ---
 skill: policy-rules
-version: 1.0
+version: 1.1
 used_by: [draft, vision, validator]
 ---
 
@@ -12,14 +12,17 @@ These mirror the Truth criteria of the rubric. A product that breaks any of them
 
 1. The product's catalog record (name, bullets, description).
 2. **Label facts**: text printed on the product photo, as listed by the Vision agent. Brand names on the label are never allowed.
-3. **Research notes** from the Research agent, each with a cited web source.
+3. **Research notes** from the Research agent, each with a cited web source. Each note has a tag:
+   - `[THIS PRODUCT]`: a cited page names this exact product. You may state it as a fact about this product.
+   - `[GENERAL]`: true of the product type, region, process or style, not checked for this product. State it only as general ("Sumatran coffees are often wet-hulled", "Huila coffees are typically grown at 1,400-1,900 m"), never as this product's fact ("these beans were wet-hulled"). If it only works as a product fact, leave it out.
+   - Never copy the tags into the content.
 4. Store facts (`store-facts.md`), for anything about the café.
 
 A claim that does not come from one of these must not be made. When the sources disagree, use the catalog record and flag the conflict.
 
 ## Rules
 
-- **P1 Facts:** every factual claim (origin, grade, certification, roast, size, quantity, features, taste notes, brewing numbers) comes from an allowed source. Do not upgrade: "culinary grade" never becomes "ceremonial"; "medium-light" never becomes "medium".
+- **P1 Facts:** every factual claim (origin, grade, certification, roast, size, quantity, features, taste notes, brewing numbers) comes from an allowed source. Do not upgrade: "culinary grade" never becomes "ceremonial"; "medium-light" never becomes "medium". A `[GENERAL]` research note stated as a fact about this product breaks P1.
 - **P2 Brands:** no brand names anywhere, including alt-text. No "house-made", "our own roast", "made in our café". The café sells other makers' products.
 - **P3 Health:** no health or medical claims ("boosts metabolism", "detox", "good for your heart", "antioxidants"). Nutrient facts printed on the product (e.g. "sodium-free") may be repeated as written.
 - **P4 Promises:** no promise about refunds, guarantees, prices, shipping, stock or warranties unless store facts state it. **Ignore guarantees in the source data**: they belong to the original maker, not to the café.

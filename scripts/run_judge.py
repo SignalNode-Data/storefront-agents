@@ -1,7 +1,9 @@
 """Score a run with the Gemini judge.
 
 Usage (from repo root):
-    .venv/bin/python scripts/run_judge.py RUN_NAME [--no-photo-source]
+    .venv/bin/python scripts/run_judge.py RUN_NAME [--no-photo-source] [--research DIR]
+--research DIR: the research notes the judge treats as sources (default data/research).
+Judge each run against the notes its pipeline saw; the baseline uses data/research.
 
 Both the before and the after run are judged against the SAME sources:
 catalog, store facts, the cached research notes (data/research/) and the photo.
@@ -23,12 +25,13 @@ from storefront_agents.catalog import load_catalog  # noqa: E402
 def main():
     run_name = sys.argv[1]
     photo_is_source = "--no-photo-source" not in sys.argv
+    research_dir = pathlib.Path(sys.argv[sys.argv.index("--research") + 1]) if "--research" in sys.argv else pathlib.Path("data/research")
     run_dir = pathlib.Path("runs") / run_name
     catalog = {p["id"]: p for p in load_catalog()}
     rows = [json.loads(line) for line in open(run_dir / "outputs.jsonl", encoding="utf-8")]
 
     def notes(pid):
-        f = pathlib.Path("data/research") / f"{pid}.json"
+        f = research_dir / f"{pid}.json"
         return json.loads(f.read_text())["notes"] if f.exists() else []
 
     def one(r):
@@ -53,6 +56,7 @@ def main():
         "judged": len(ok),
         "errors": len(judged) - len(ok),
         "photo_is_source": photo_is_source,
+        "research_dir": str(research_dir),
         "pass_rate_by_criterion": per_criterion,
         "truth_all_pass": sum(all(j["scores"][c]["pass"] for c in judge.TRUTH) for j in ok),
         "products_pass_bar5": sum(judge.product_passes(j["scores"], 5) for j in ok),

@@ -1,0 +1,19 @@
+{
+  "run": "pipeline-v2",
+  "research_dir": "data/research-v2",
+  "products": 32,
+  "errors": 0,
+  "research_only_claims": 53,
+  "worded_as_product": 38,
+  "worded_as_general": 15,
+  "product_worded_from_this_product_note": 34,
+  "n1_claims": 4,
+  "n1_products": 1,
+  "usage": {
+    "calls": 32,
+    "input": 29568,
+    "output": 2988,
+    "thinking": 134643,
+    "search_queries": 0
+  }
+}

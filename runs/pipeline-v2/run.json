@@ -1,0 +1,49 @@
+{
+  "run": "pipeline-v2",
+  "model": "gemini-3.8-flash",
+  "started_utc": "2026-11-09T18:51:38+00:00",
+  "products": 32,
+  "status": {
+    "publish": 30,
+    "hold_photo_mismatch": 2
+  },
+  "revised": 3,
+  "max_revisions": 1,
+  "research_dir": "data/research-v2",
+  "skills": {
+    "brand-voice": "1.1",
+    "output-format": "1.0",
+    "policy-rules": "1.1",
+    "store-facts": "1.0"
+  },
+  "usage_by_agent": {
+    "research": {
+      "calls": 31,
+      "input": 14629,
+      "output": 7854,
+      "thinking": 46909,
+      "search_queries": 87
+    },
+    "vision": {
+      "calls": 33,
+      "input": 75611,
+      "output": 3838,
+      "thinking": 0,
+      "search_queries": 0
+    },
+    "draft": {
+      "calls": 34,
+      "input": 86257,
+      "output": 22284,
+      "thinking": 160842,
+      "search_queries": 0
+    },
+    "validator": {
+      "calls": 35,
+      "input": 142237,
+      "output": 562,
+      "thinking": 64872,
+      "search_queries": 0
+    }
+  }
+}

@@ -10,7 +10,8 @@ import pathlib
 from storefront_agents import checks, llm, skills
 from storefront_agents.catalog import BRAND_PATTERN
 
-RESEARCH_CACHE = pathlib.Path("data/research")
+RESEARCH_CACHE = pathlib.Path("data/research")  # v1 cache; run scripts can point this at another folder
+TAGS = ("[THIS PRODUCT]", "[GENERAL]")
 
 
 def _product_view(p):
@@ -34,7 +35,11 @@ Use Google Search. Find 3-6 short, useful facts a customer would want, such as:
 Rules:
 - Use at most 3 searches.
 - Specs of an exact model (capacity, wattage, features) only if the source clearly names this exact model. Otherwise give general facts about this kind of product.
-- One fact per line, starting with "- ".
+- One fact per line, starting with "- " and then exactly one tag:
+  - "[THIS PRODUCT]" only if a page you found names this exact product (same maker and product name, or same model number) and states this fact about it.
+  - "[GENERAL]" for everything else: facts about the product type, region, process, style or typical flavor, and brewing advice for this kind of product.
+  - If you are not sure, use "[GENERAL]".
+- Write a [GENERAL] fact as a general statement ("Sumatran coffees are often wet-hulled"), never as a fact about this bag.
 - Facts must be general or about this exact product. Never name a brand or a store.
 - No health claims.
 - If you cannot find a fact with confidence, leave it out.
@@ -56,17 +61,31 @@ def research(p, search_name):
     for ch in (gm.grounding_chunks or []) if gm else []:
         if ch.web:
             sources.append({"title": ch.web.title, "uri": ch.web.uri})
-    notes = []
+    supports = []  # which cited pages back which text, for spot-checks by hand
+    for sp in (gm.grounding_supports or []) if gm else []:
+        if sp.segment and sp.segment.text:
+            supports.append((sp.segment.text.strip(), list(sp.grounding_chunk_indices or [])))
+    notes, note_sources, untagged = [], [], 0
     for line in (text or "").splitlines():
         line = line.strip()
         if line.startswith("- "):
             fact = line[2:].replace("**", "").strip()
+            tag = next((t for t in TAGS if fact.upper().startswith(t)), None)
+            if tag:
+                fact = fact[len(tag):].strip()
+            else:
+                untagged += 1
+                tag = "[GENERAL]"  # no tag = not checked for this product
             if fact and not BRAND_PATTERN.search(fact):  # never let a brand through
-                notes.append(fact)
+                notes.append(f"{tag} {fact}")
+                idx = sorted({i for seg, ids in supports if seg and (seg in line or fact in seg) for i in ids})
+                note_sources.append(idx)
     result = {
         "id": p["id"],
         "notes": notes,
         "sources": sources,
+        "note_sources": note_sources,  # per note: indexes into "sources" (from grounding supports; may be empty)
+        "untagged_notes": untagged,
         "search_queries": list(gm.web_search_queries or []) if gm else [],
         # Google requires showing Search Suggestions with grounded results; keep it for the demo.
         "search_entry_point": gm.search_entry_point.rendered_content if gm and gm.search_entry_point else None,
@@ -118,7 +137,7 @@ DRAFT_PROMPT = """You write product content for Half Tempo Café's online store.
 [LABEL] facts printed on the package:
 {label_facts}
 
-[RESEARCH] notes from cited web sources:
+[RESEARCH] notes from cited web sources (tags: see the policy-rules skill, rule P1):
 {research}
 
 [STORE] = the store-facts skill above.
@@ -131,9 +150,9 @@ Return JSON:
 {{
   "description": "...",
   "launch_brief": {{"who_its_for": "...", "hook": "...", "social_post": "..."}},
-  "claims": [{{"claim": "a factual claim you made", "source": "CATALOG | LABEL | RESEARCH | STORE"}}]
+  "claims": [{{"claim": "a factual claim you made", "source": "CATALOG | LABEL | RESEARCH-THIS-PRODUCT | RESEARCH-GENERAL | STORE"}}]
 }}
-List every factual claim in "claims" with the source it came from.
+List every factual claim in "claims" with the source it came from. Never copy the tags into the content.
 """
 
 
@@ -181,7 +200,7 @@ VALIDATOR_PROMPT = """You are the Validator for Half Tempo Café. You check a dr
 The product photo is attached. Check the alt-text against the photo: visible colors, shapes and packaging are fine. Flag alt-text claims that are not visible, subjective feature claims (e.g. "ergonomic"), and any brand name.
 
 Check ONLY these rules (code already checked brand names, banned words, lengths and size placement):
-- P1 Facts: is every factual claim in the description, launch brief and alt-text supported by a source above? Upgrades count as failures (e.g. "medium" when the source says "medium-light").
+- P1 Facts: is every factual claim in the description, launch brief and alt-text supported by a source above? Upgrades count as failures (e.g. "medium" when the source says "medium-light"). A fact that comes only from a [GENERAL] research note and is stated as a fact about this product fails P1 (e.g. "these beans were wet-hulled" from "[GENERAL] Sumatran coffees are often wet-hulled"); it must be worded as general ("often", "typically", "Sumatran coffees are ...").
 - P3 Health: any health or medical claim?
 - P4 Promises: any refund, guarantee, price, shipping or stock promise not in store facts?
 - P5 Tips: is the brewing or use tip supported, and not contradicted by research?

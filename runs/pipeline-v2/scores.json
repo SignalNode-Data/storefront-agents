@@ -1,0 +1,30 @@
+{
+  "run": "pipeline-v2",
+  "judged": 32,
+  "errors": 0,
+  "photo_is_source": true,
+  "research_dir": "data/research-v2",
+  "pass_rate_by_criterion": {
+    "T1": 1.0,
+    "T2": 1.0,
+    "T3": 1.0,
+    "T4": 1.0,
+    "V1": 1.0,
+    "V2": 1.0,
+    "V3": 1.0,
+    "U1": 1.0,
+    "U2": 1.0,
+    "A1": 1.0,
+    "A2": 1.0
+  },
+  "truth_all_pass": 32,
+  "products_pass_bar5": 32,
+  "products_pass_bar4": 32,
+  "judge_usage": {
+    "calls": 32,
+    "input": 127721,
+    "output": 12085,
+    "thinking": 29554,
+    "search_queries": 0
+  }
+}

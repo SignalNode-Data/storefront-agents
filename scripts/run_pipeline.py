@@ -1,7 +1,8 @@
 """Block 4/5: run the agent pipeline on products and save everything.
 
 Usage (from repo root):
-    .venv/bin/python scripts/run_pipeline.py RUN_NAME [ITEM_ID ...]
+    .venv/bin/python scripts/run_pipeline.py RUN_NAME [--reason TEXT] [--research DIR] [ITEM_ID ...]
+--research DIR: research cache folder (default data/research, the v1 cache).
 Writes runs/RUN_NAME/outputs.jsonl and runs/RUN_NAME/run.json
 With ITEM_IDs and an existing run: replaces only those rows and logs the re-run
 in run.json under "reruns" (the first run's summary stays as it was).
@@ -14,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 sys.path.insert(0, ".")
-from storefront_agents import llm, skills  # noqa: E402
+from storefront_agents import agents, llm, skills  # noqa: E402
 from storefront_agents.catalog import load_catalog  # noqa: E402
 from storefront_agents.pipeline import MAX_REVISIONS, run_product  # noqa: E402
 
@@ -31,6 +32,10 @@ def main():
     if "--reason" in args:
         i = args.index("--reason")
         reason = args[i + 1]
+        del args[i:i + 2]
+    if "--research" in args:
+        i = args.index("--research")
+        agents.RESEARCH_CACHE = pathlib.Path(args[i + 1])
         del args[i:i + 2]
     run_name, only = args[0], set(args[1:])
     out_dir = pathlib.Path("runs") / run_name
@@ -79,6 +84,7 @@ def main():
         "status": dict(Counter(r["status"] for r in results)),
         "revised": sum(1 for r in results if r.get("revisions")),
         "max_revisions": MAX_REVISIONS,
+        "research_dir": str(agents.RESEARCH_CACHE),
         "skills": {s["name"]: s["version"] for s in skills.all_skills()},
         "usage_by_agent": llm.USAGE,
     }
