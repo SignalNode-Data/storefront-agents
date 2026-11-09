@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+# Secrets and local config
+.env
+.env.*
+*.pem
+*key*.json
+credentials*.json
+application_default_credentials.json
+# Local leak-guard files, in case one is ever copied here
+names.txt
+private.txt
+# OS and editor
+.DS_Store
+.vscode/
+.idea/
+# Run outputs that may hold absolute paths; commit curated results only
+*.log
+runs/raw/
