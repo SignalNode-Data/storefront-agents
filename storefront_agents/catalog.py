@@ -39,7 +39,7 @@ import json
 import re
 
 BRAND_PATTERN = re.compile(
-    r"amazon|allegro|wickedly prime|vedaka|whole foods|365 every|365 by|solimo|happy belly|fresh brand",
+    r"amazon|allegro|wickedly prime|vedaka|whole foods|365 every|365 by|365 organic|solimo|happy belly|fresh brand",
     re.IGNORECASE,
 )
 

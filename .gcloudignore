@@ -1,0 +1,17 @@
+# Upload only what the Dockerfile needs.
+.git
+.gitignore
+.venv
+**/__pycache__
+.pytest_cache
+tests
+scripts
+prompts
+*.md
+!skills/*.md
+!evals/rubric.md
+runs/*
+!runs/baseline-v1
+!runs/baseline-v1/outputs.jsonl
+!runs/pipeline-v1
+!runs/pipeline-v1/outputs.jsonl
