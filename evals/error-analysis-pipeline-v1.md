@@ -21,7 +21,7 @@ Tokens: 318,538 input · 36,247 output · 213,531 thinking · 80 grounded search
 
 | # | Group | Products | Rubric | Example |
 |---|---|---|---|---|
-| N1 | **General facts stated as this product's facts.** Research returns facts about the *type* of product; Draft writes them as facts about *this* bag. | ~9 | T1 (passes as written: the fact is in the research notes) | Colombia: "These beans grow in the high-altitude San Agustín area of Huila, … 1,400-1,900 m" (the label says only "Colombia Agustino Forest"). Sumatra: "processed using the region's traditional wet-hulling method". Yunnan, 72% chocolate, honey, truffles: flavor or texture notes typical of the type, written as this product's notes. |
+| N1 | **General facts stated as this product's facts.** Research writes facts about the *type* of product (region, process, typical flavor) as facts about *this* bag, with no "often" or "typically". Draft copies them faithfully. (Corrected 09:25: first written as a Draft error.) | ~9 | T1 (passes as written: the fact is in the research notes) | Colombia: research note "Grown in the high-altitude San Agustín area of Huila … 1,400 and 1,900 meters"; description repeats it (the label says only "Colombia Agustino Forest"). Sumatra: research note "prepared using the region's traditional *Giling Basah* (wet-hulling) method", stated as this bag's process. Yunnan, 72% chocolate, honey, truffles: flavor or texture notes typical of the type, written as this product's notes. |
 | N2 | **Research may describe a similar but different product.** | 1-2 suspected | T1 | Kettle and grinder specs (1 liter, swivel base, 150 W motor) come from web pages that may describe related models. Not verified. |
 | N3 | **Pairings with products the store doesn't sell.** | 5 | none (allowed) | "hojicha" suggested in 5 pairings. Harmless, but off-catalog. |
 | N4 | **Second photo hold: organic claim not on the package.** | 1 | P6 | Organic Green Matcha Powder: the catalog says organic; the package shows no organic claim. Correctly held for a person to decide. The draft still says "organic" (from the catalog). |
@@ -33,3 +33,9 @@ The Validator caught alt-text problems ("ergonomic", "glass jar", "stainless ste
 **Make Research label each note as `[THIS PRODUCT]` (a cited source names this exact product) or `[GENERAL]` (true of the product type), and make Draft and Validator treat `[GENERAL]` notes as general:** "Sumatran coffees are often wet-hulled", never "these beans were wet-hulled".
 
 Why this change: N1 is the largest remaining group, it is a real truth risk (the rubric's most important area), and it is a single, testable change in two skills/prompts. Measure: N1 count and T1 pass rate, before vs after the change.
+
+## Note on scoring N1 (2026-11-09 09:25 PT, candidate decision)
+
+The candidate considered a rubric v1.2 rule ("a general note stated as a product fact fails T1") and kept v1.1. Reason: the notes themselves state general facts as product facts, so neither a person nor the judge can tell from the sheet which notes are general. A rule nobody can check gives noisy scores. T1 stays "the claim is in the sources". Hand-scorers may add "doubt: research note" to a reason.
+
+N1 is measured outside the blind scoring instead: Claude counts origin and process claims stated as product facts, before and after the Block 5 change, and spot-checks a few cited source pages by hand. The case study reports this as Claude's check, not the blind score.
