@@ -46,11 +46,11 @@
     <label class="small" for="pick">Choose a product</label>
     <select id="pick"></select>
     <img id="photo" class="product" alt="">
-    <button id="rec">Show recorded run (instant)</button>
+    <button id="rec" hidden>Show recorded run (instant)</button>
     <button id="live" class="secondary">Run the agents live (~1 min)</button>
     <p class="small" id="note">Live runs are limited per visitor per day. Research comes from a saved, cited search, so live runs repeat only the writing and checking steps.</p>
   </section>
-  <section class="card" id="out"><p class="small">Pick a product, then show a recorded run or run the agents live.</p></section>
+  <section class="card" id="out"><p class="small">Loading…</p></section>
 </main>
 <script>
 const $ = s => document.querySelector(s);
@@ -63,7 +63,14 @@ async function init() {
   ps.forEach(p => (groups[p.group] ||= []).push(p));
   $("#pick").innerHTML = Object.entries(groups).map(([g, list]) =>
     `<optgroup label="${esc(g)}">${list.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("")}</optgroup>`).join("");
-  $("#pick").onchange = showPhoto; showPhoto();
+  $("#pick").onchange = () => { showPhoto(); loadRecorded(); }; showPhoto(); loadRecorded();
+}
+async function loadRecorded() {  // the recorded run follows the selected product; the Before/After choice stays
+  const pid = $("#pick").value;
+  $("#out").innerHTML = `<p class="small">Loading…</p>`;
+  const rec = await (await fetch("/api/recorded/" + pid)).json();
+  if (pid !== $("#pick").value) return;  // a newer choice won
+  current = rec; render();
 }
 function showPhoto() { $("#photo").src = "/api/image/" + $("#pick").value; $("#photo").alt = ""; }
 
@@ -102,9 +109,7 @@ function render() {
   const sep = document.getElementById("sep");
   if (sep && r.search_entry_point && view === "after") sep.innerHTML = r.search_entry_point; // Google Search Suggestions, shown as provided
 }
-$("#rec").onclick = async () => {
-  current = await (await fetch("/api/recorded/" + $("#pick").value)).json(); view = "after"; render();
-};
+$("#rec").onclick = loadRecorded;
 $("#live").onclick = async () => {
   const b = $("#live"); b.disabled = true; b.textContent = "Running… (~1 min)";
   try {
@@ -115,7 +120,7 @@ $("#live").onclick = async () => {
   } finally { b.disabled = false; b.textContent = "Run the agents live (~1 min)"; }
 };
 fetch("/api/config").then(r => r.json()).then(c => {
-  if (!c.live) { $("#live").hidden = true; $("#note").textContent = "Live runs are paused. These are recorded runs of the agents from November 9, 2026."; }
+  if (!c.live) { $("#live").hidden = true; $("#note").textContent = "Pick a product. You see what the agents wrote (After) and what one plain prompt wrote from the same inputs (Before). These are recorded runs from November 9, 2026; live runs are paused."; }
 }).catch(() => {});
 init();
 </script>
