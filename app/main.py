@@ -76,7 +76,7 @@ async def noindex(request, call_next):
 
 @app.get("/")
 def index():
-    return FileResponse("app/static/index.html")
+    return FileResponse("app/static/index.html", headers={"Cache-Control": "no-cache"})  # always serve the latest page
 
 
 @app.get("/robots.txt")
